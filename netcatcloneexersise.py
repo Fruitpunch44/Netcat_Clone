@@ -12,7 +12,7 @@ import threading
 def execute(cmd):
     cmd = cmd.strip()
     if not cmd:
-        return
+        return ""
     output = subprocess.check_output(shlex.split(cmd),
                                      stderr=subprocess.STDOUT,
                                      text=True,
@@ -114,12 +114,12 @@ class NetCat:
     def handle(self, client_socket):
         if self.args.execute:
             output = execute(self.args.execute)
-            client_socket.send(output.encode(), )
+            client_socket.send(output.encode())
 
         elif self.args.upload:
             file_buffer = b' '
             while True:
-                data = client_socket.recv(4096)
+                data = client_socket.recv(4096).decode()
                 if data:
                     file_buffer += data
                     print(len(file_buffer))
@@ -153,7 +153,7 @@ class NetCat:
 if args.listen:
     buffer = ''
 else:
-    buffer = sys.stdin.read()  # if not read from standard input into the buffer
+    buffer = sys.stdin.readline()  # if not read from standard input into the buffer
 
 nc = NetCat(args, buffer.encode())
 nc.run()
